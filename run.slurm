@@ -17,7 +17,7 @@ echo "Num GPUs    : $NUM_GPUS $GPU_MDL"
 echo "======================================================"
 echo ""
 
-python3 ICU\ preparedness\ simulator\ 2.py
+python3 ICU-preparedness-cluster.py
 
 echo ""
 echo "======================================================"
