@@ -1,0 +1,17 @@
+======================================================
+Start Time  : Thu Jul 17 05:37:20 PM EDT 2025
+Submit Dir  : /users/hwest10/ICU-simulator
+Job ID/Name : 5166261 / my-first-cluster-run
+Node List   : str-c6
+Num Tasks   : 2 total [1 nodes @ 2 CPUs/node]
+Num GPUs    :  
+======================================================
+
+Traceback (most recent call last):
+  File "/users/hwest10/ICU-simulator/ICU preparedness simulator 2.py", line 6, in <module>
+    import matplotlib.pyplot as plt
+ModuleNotFoundError: No module named 'matplotlib'
+
+======================================================
+End Time   : Thu Jul 17 05:37:20 PM EDT 2025
+======================================================
