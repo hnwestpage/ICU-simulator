@@ -61,7 +61,7 @@ tt = 6              # number of time steps per day (~4 hour time steps)
 
 # Miscellaneous
 N = 1*10**5                       # population size (urban setting baseline)
-M = 1                            # Number of sample paths
+M = 5                            # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
@@ -406,6 +406,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   run_N_T = []
 
   for i in range (M):
+    print("Run number",str(i+1))
     # Seeding initial conditions
     # Queue placeholder
     X_occ = []
