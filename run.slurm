@@ -3,7 +3,7 @@
 #SBATCH --partition=Orion
 #SBATCH --job-name=my-first-cluster-run
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=2
+#SBATCH --ntasks-per-node=5
 #SBATCH --mem-per-cpu=4GB
 #SBATCH --time=0:02:00
 
