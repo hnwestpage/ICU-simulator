@@ -487,6 +487,18 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
       # Determine number of infectious patients in queue
       C.append(sum(X_occ))
 
+    # Printing resulting array of runs
+    print('Timestamp list:',t)
+    print('Number in queue',X)
+    print('Number of infectious patients in queue',C)
+    print('Number in ICU',Z)
+    print('Number of infectious patients in ICU',F)
+    print('Number of active clinicians',H)
+    print('Queue departures',q_D)
+    print('Infectious queue departures',q_D_F)
+    print('Effective ICU Capacity',N_T)
+    
+    """
     # Record run
     run_t.append(t)
     run_X.append(X)
@@ -497,8 +509,9 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
     run_q_D.append(q_D)
     run_q_D_F.append(q_D_F)
     run_N_T.append(N_T)
+    """
 
-  # Printing resulting array of runs
+  """ # Printing resulting array of runs
   print('Timestamp list:',run_t)
   print('Number in queue',X)
   print('Number of infectious patients in queue',C)
@@ -509,7 +522,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   print('Infectious queue departures',q_D_F)
   print('Effective ICU Capacity',N_T)
 
-  """ Calculating the average run: commented out for now, may be able to do this locally
+  Calculating the average run: commented out for now, may be able to do this locally
   X_avg = find_avg_run(run_t, run_X)
   C_avg = find_avg_run(run_t, run_C)
   Z_avg = find_avg_run(run_t, run_Z)
@@ -518,14 +531,12 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   q_D_avg = find_avg_run(run_t, run_q_D)
   q_D_F_avg = find_avg_run(run_t, run_q_D_F)
   N_T_avg = find_avg_run(run_t, run_N_T)
-  """
+  
 
   # Untreated mortality mean and standard deviation
   mean, stdev = get_mortality_stats(run_q_D)
   U_mort_avg = mean
-  U_mort_std = stdev
-
-  return float(U_mort_avg), float(U_mort_std)
+  U_mort_std = stdev"""
 
 # MULTI SCENARIO MODEL*******************************************************************************************************************
 def multi_model(U, a, b, mu_1, mu_2, eta, nu):
