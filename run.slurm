@@ -3,9 +3,9 @@
 #SBATCH --partition=Orion
 #SBATCH --job-name=my-first-cluster-run
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=5
+#SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=4GB
-#SBATCH --time=0:02:00
+#SBATCH --time=2:00:00
 
 echo "======================================================"
 echo "Start Time  : $(date)"
