@@ -3,6 +3,8 @@
 # imports
 import numpy as np
 import math
+import time
+
 #---------------------------------------------------------------------
 # PRELIMINARY FUNCTIONS
 # Budget operations calculator
@@ -27,9 +29,9 @@ def get_budget_options(U, a, b):
 # Parameter initializations
 
 # Resources                # Description
-U = 2.6 * 10**7            # Hospital budget in USD (total expense = $26 million)
-a = 3.0 * 10**5            # Average HCP yearly salary ($300,000)
-b = 1.25 * 10**5           # Average cost of one ICU bed for a year ($125,000)
+U = 4.5 * 10**6            # Hospital budget in USD (total expense = $26 million)
+a = 2.0 * 10**5            # Average HCP yearly salary ($300,000)
+b = 1.00 * 10**5           # Average cost of one ICU bed for a year ($125,000)
 c = 0.35                   # Percent of budget spent on constant costs (Utilities, maintenence)
 d = 0.27                   # Percent of budget spent on nursing personnel
 
@@ -392,19 +394,6 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   traffic = lmbda/(n_current*mu_1)
   print('The baseline traffic density is '+str(traffic)+'%')
 
-  # Initializing empty arrays for tracking all sample runs
-  run_t = []
-  run_X = []
-  run_C = []
-  run_Z = []
-  run_F = []
-  run_H = []
-  run_J = []
-  run_q_D = []
-  run_q_D_F = []
-  run_icu_D = []
-  run_N_T = []
-
   for i in range (M):
     print("Run number",str(i+1))
     # Seeding initial conditions
@@ -497,49 +486,11 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
     print('Queue departures',q_D)
     print('Infectious queue departures',q_D_F)
     print('Effective ICU Capacity',N_T)
-    
-    """
-    # Record run
-    run_t.append(t)
-    run_X.append(X)
-    run_C.append(C)
-    run_Z.append(Z)
-    run_F.append(F)
-    run_H.append(H)
-    run_q_D.append(q_D)
-    run_q_D_F.append(q_D_F)
-    run_N_T.append(N_T)
-    """
-
-  """ # Printing resulting array of runs
-  print('Timestamp list:',run_t)
-  print('Number in queue',X)
-  print('Number of infectious patients in queue',C)
-  print('Number in ICU',Z)
-  print('Number of infectious patients in ICU',F)
-  print('Number of active clinicians',H)
-  print('Queue departures',q_D)
-  print('Infectious queue departures',q_D_F)
-  print('Effective ICU Capacity',N_T)
-
-  Calculating the average run: commented out for now, may be able to do this locally
-  X_avg = find_avg_run(run_t, run_X)
-  C_avg = find_avg_run(run_t, run_C)
-  Z_avg = find_avg_run(run_t, run_Z)
-  F_avg = find_avg_run(run_t, run_F)
-  H_avg = find_avg_run(run_t, run_H)
-  q_D_avg = find_avg_run(run_t, run_q_D)
-  q_D_F_avg = find_avg_run(run_t, run_q_D_F)
-  N_T_avg = find_avg_run(run_t, run_N_T)
-  
-
-  # Untreated mortality mean and standard deviation
-  mean, stdev = get_mortality_stats(run_q_D)
-  U_mort_avg = mean
-  U_mort_std = stdev"""
 
 # MULTI SCENARIO MODEL*******************************************************************************************************************
 def multi_model(U, a, b, mu_1, mu_2, eta, nu):
+  start_time = time.time()
+
   # Get combinations based on allotted budget
   budget_array = get_budget_options(U, a, b)
 
@@ -554,24 +505,14 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
       n_current = pair[0]
       H_current = pair[1]
 
+      # Empty list for each run of q_D
+      run_q_D = []
+
       # Pre-pandemic traffic density
       traffic = lmbda/(n_current*mu_1)
 
-      # Initializing empty arrays for tracking all sample runs
-      run_t = []
-      run_X = []
-      run_C = []
-      run_Z = []
-      run_F = []
-      run_H = []
-      run_J = []
-      run_q_D = []
-      run_q_D_F = []
-      run_icu_D = []
-      run_N_T = []
-
       # For each sample run
-      for i in range (M):
+      for i in range (1):
         # Seeding initial conditions
         # Queue placeholder
         X_occ = []
@@ -653,26 +594,20 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
           #C.append(sum(X_occ))
 
         # Record run
-        #run_t.append(t)
-        #run_X.append(X)
-        #run_C.append(C)
-        #run_Z.append(Z)
-        #run_F.append(F)
-        #run_H.append(H)
         run_q_D.append(q_D)
         #run_q_D_F.append(q_D_F)
-        #run_N_T.append(N_T)
 
       # Calculating average accumulation & stdev of untreated deaths for the given pair
-      mean, stdev = get_mortality_stats(run_q_D)
-      U_mort_avg[n_current,H_current] = mean
-      U_mort_std[n_current,H_current] = stdev
+      #mean, stdev = get_mortality_stats(run_q_D)
+      #U_mort_avg[n_current,H_current] = mean
+      #U_mort_std[n_current,H_current] = stdev
 
-  return U_mort_avg, U_mort_std
+  print(run_q_D)
+  print("--- %s seconds ---" % (time.time() - start_time))
 
 #------------------------------------------------------------------------------------------------
 # Sensitivity analysis...
 
 #-----------------------------------------------------------------------------------------------
 # Testing area
-single_model(14, 30, lmbda, mu_1, mu_2, 1/10, 1/20, eta, nu, r)
+multi_model(U, a, b, mu_1, mu_2, eta, nu)
