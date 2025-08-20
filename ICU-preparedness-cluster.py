@@ -63,12 +63,12 @@ tt = 6              # number of time steps per day (~4 hour time steps)
 
 # Miscellaneous
 N = 1*10**5                       # population size (urban setting baseline)
-M = 5                            # Number of sample paths
+M = 5                             # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
 
-# Set and Get Functions
+# Set and Get Functions ###########################################################################################
 
 # Function to check the current number of infected individuals
 def check_I(current_t):
@@ -140,7 +140,7 @@ def check_capacity(n, H, N_T, r):
 
   return N_T
 
-# Event Functions
+# Event Functions ####################################################################################################
 
 # Simulated SEIR-pandemic
 def SEIR(S_0, E_0, I_0, R_0, days, N): #Inputs are initial no. of patients and days to run
@@ -304,7 +304,7 @@ def HCP_return(X_occ, Z, F, H, J, q_D, q_D_F, icu_D):
   icu_D.append(int(icu_D[-1]))
   return X_occ, Z, F, H, J, q_D, q_D_F, icu_D
 
-# Finding times and averages
+# Finding times and averages ######################################################################################
 
 # Function which finds the average value of each randomized run at uniform timesteps in [0,T].
 def find_avg_run(t,X):
@@ -489,7 +489,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
 
 # MULTI SCENARIO MODEL*******************************************************************************************************************
 def multi_model(U, a, b, mu_1, mu_2, eta, nu):
-  start_time = time.time()
+  #start_time = time.time()
 
   # Get combinations based on allotted budget
   budget_array = get_budget_options(U, a, b)
@@ -512,7 +512,7 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
       traffic = lmbda/(n_current*mu_1)
 
       # For each sample run
-      for i in range (1):
+      for i in range (M):
         # Seeding initial conditions
         # Queue placeholder
         X_occ = []
@@ -598,14 +598,16 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
         #run_q_D_F.append(q_D_F)
 
       # Calculating average accumulation & stdev of untreated deaths for the given pair
-      #mean, stdev = get_mortality_stats(run_q_D)
-      #U_mort_avg[n_current,H_current] = mean
-      #U_mort_std[n_current,H_current] = stdev
+      mean, stdev = get_mortality_stats(run_q_D)
+      U_mort_avg[n_current,H_current] = mean
+      U_mort_std[n_current,H_current] = stdev
 
-  print(run_q_D)
-  print("--- %s seconds ---" % (time.time() - start_time))
+  print("Mortality Averages", U_mort_avg)
+  print("Mortality standard deviations", U_mort_std)
+  
+  #print("--- %s seconds ---" % (time.time() - start_time))
 
-#------------------------------------------------------------------------------------------------
+#-----------------------------------------------------------------------------------------------
 # Sensitivity analysis...
 
 #-----------------------------------------------------------------------------------------------
