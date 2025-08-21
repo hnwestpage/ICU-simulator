@@ -63,7 +63,7 @@ tt = 6              # number of time steps per day (~4 hour time steps)
 
 # Miscellaneous
 N = 1*10**5                       # population size (urban setting baseline)
-M = 5                             # Number of sample paths
+M = 3                             # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
@@ -602,9 +602,14 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
       U_mort_avg[n_current,H_current] = mean
       U_mort_std[n_current,H_current] = stdev
 
-  print("Mortality Averages", U_mort_avg)
-  print("Mortality standard deviations", U_mort_std)
-  
+  print("Mortality Averages")
+  for row in U_mort_avg:
+    print(row)
+
+  print("Mortality standard deviations")
+  for row in U_mort_std:
+    print(row)
+
   #print("--- %s seconds ---" % (time.time() - start_time))
 
 #-----------------------------------------------------------------------------------------------
