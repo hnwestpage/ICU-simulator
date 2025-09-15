@@ -522,7 +522,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
     run_q_D_F.append(q_D_F)
 
   # Return the mortality stats*** Sensitivity Analysis Runs
-  mean1, mean2, mean3, stdev1, stdev2, stdev3 = get_mortality_stats(run_q_D)
+  mean1, mean2, mean3, stdev1, stdev2, stdev3 = get_mortality_stats(run_q_D, run_q_D_F)
 
   # non-COVID-19 patients
   U_mort_avg = mean1
