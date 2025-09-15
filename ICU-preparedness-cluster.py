@@ -29,9 +29,9 @@ def get_budget_options(U, a, b):
 # Parameter initializations
 
 # Resources                # Description
-U = 4.5 * 10**6            # Hospital budget in USD (total expense = $26 million)
-a = 2.0 * 10**5            # Average HCP yearly salary ($300,000)
-b = 1.00 * 10**5           # Average cost of one ICU bed for a year ($125,000)
+U = 2.6 * 10**6            # Hospital budget in USD (total expense = $26 million)
+a = 3.0 * 10**5            # Average HCP yearly salary ($300,000)
+b = 1.25 * 10**5           # Average cost of one ICU bed for a year ($125,000)
 c = 0.35                   # Percent of budget spent on constant costs (Utilities, maintenence)
 d = 0.27                   # Percent of budget spent on nursing personnel
 
@@ -40,12 +40,12 @@ budget_array = get_budget_options((1-c-d)*U, a, b)
 
 # Rates
 lmbda = 7            # Baseline arrival rate of patients to ICU
-mu_1 = 1/3.3         # Departure rate of baseline (non infectious) patients from ICU (1/recovery)
+mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 1/20         # Departure rate of baseline patients from the queue (renege)
-rho_2 = 1/20         # Departure rate of COVID-19 patients from the queue (renege)
-eta = 0.020          # Rate at which HCP becomes infected in the workplace
-nu = 1/6             # Rate at which infected HCP recover/return to work
+rho_2 = rho_1        # Departure rate of COVID-19 patients from the queue (renege)
+eta = 0.008          # Rate at which HCP becomes infected in the workplace
+nu = 1/8.5           # Rate at which infected HCP recover/return to work
 
 # Proportions
 mort_ICU = 0.245           # Proportion of baseline patients who perish in the ICU- Kim et al. (2021), Vincent et al. (2020)
@@ -55,7 +55,7 @@ mort_Q_19 = 0.507          # Proportion of COVID-19 patients who perish in the q
 crit = 0.00102             # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
 r =  1/9.5                 # Threshold ratio of HCP to beds (servers)
 
-# SEIR parameters - Original Wuhan
+# SEIR parameters - Original Wuhan 2020
 beta = 0.0000033    # contact rate between susceptibles and infectives
 gamma = 1/5.2       # reciprocal of mean exposed period (5.2 days)
 alpha = 1/8         # reciprocal of mean recovery period (8 days)
@@ -67,6 +67,13 @@ M = 5                             # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
+
+# Print out current parameters
+print("Resources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
+print("Rates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\n\Reneging: ",rho_1,"\n\HCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
+print("Proportions:-----------------\n\% Critical condition: ",crit,"\nCoverage ratio (HCP:Patients): ",r)
+print("SEIR Parameters:-----------------\nbeta: ",beta,"\ngamma: ",gamma,"\nalpha: ",alpha,"\nPopulation size: ",N)
+print("Total sample paths per scenario: ",M)
 
 # Set and Get Functions ###########################################################################################
 
@@ -363,15 +370,14 @@ def get_mortality_stats(run_q_D, run_q_D_F):
   # Get the average of each
   avg_1 = np.mean(entries)
   avg_2 = np.mean(entries_F)
-  #avg_3 = np.mean(entries_1)
-  #print('Queue departure average: '+str(avg))
+  avg_3 = np.mean(entries_1)
 
   # Get standard deviation of each
-  std_1 = np.std(entries)
-  std_2 = np.std(entries_F)
-  #std_3 = np.std(entries_1)
-  #print('Proportion of mortality: '+str(mort_Q))
+  std_1 = np.std(entries) # non covid
+  std_2 = np.std(entries_F) # covid
+  std_3 = np.std(entries_1) # total
   
+  """
   U_mort_mean_1 = mort_Q * avg_1
   U_mort_mean_19 = mort_Q_19 * avg_2
 
@@ -380,8 +386,8 @@ def get_mortality_stats(run_q_D, run_q_D_F):
 
   U_mort_mean = U_mort_mean_1 + U_mort_mean_19
   U_mort_std = U_mort_std_1 + U_mort_std_19
-
-  return U_mort_mean, U_mort_std
+  """
+  return avg_1, avg_2, avg_3, std_1, std_2, std_3
 
 # Function to find the (beds/hcp combo) minimizer of queue deaths
 def find_mort_min(U_mort_avg):
@@ -411,7 +417,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
 
   # Print baseline traffic density lambda/(n x mu)
   traffic = lmbda/(n_current*mu_1)
-  print('The baseline traffic density is '+str(traffic)+'%')
+  #print('The baseline traffic density is '+str(traffic)+'%')
 
   # Sensitivity analysis***
   run_q_D = []
@@ -516,11 +522,21 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
     run_q_D_F.append(q_D_F)
 
   # Return the mortality stats*** Sensitivity Analysis Runs
-  mean, stdev = get_mortality_stats(run_q_D)
-  U_mort_avg = mean
-  U_mort_std = stdev
+  mean1, mean2, mean3, stdev1, stdev2, stdev3 = get_mortality_stats(run_q_D)
 
-  return float(U_mort_avg), float(U_mort_std)
+  # non-COVID-19 patients
+  U_mort_avg = mean1
+  U_mort_std = stdev1
+
+  # COVID-19 patients
+  U_mort_avg_19 = mean2
+  U_mort_std_19 = stdev2
+
+  # total or ALL patients
+  Total_avg = mean3
+  Total_stdev = stdev3
+
+  return float(U_mort_avg), float(U_mort_std), float(U_mort_avg_19), float(U_mort_std_19), float(Total_avg), float(Total_stdev)
 
     
 #****************************************************************************************************************************************
@@ -658,80 +674,160 @@ H = 15
 n = 35
 
 # Parameter ranges
-lmbda_range =  [8, 9, 10, 11, 12, 13, 14, 15]                                  # Begen et al., (2024)
-mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/12, 1/15, 1/18]         # Moitra et al., (2017)
-mu_2_range =  [] # NEEDS REFERENCE
-rho_1_range =  [0.1, 0.08, 0.06, 0.04, 0.02, 0.01]                                # Lo, (2001)
-rho_2_range = [] # NEEDS REFERENCE
-ratio_range =  [1/8, 1/9, 1/10, 1/11]                                           # Bhatla & Ryskina (2020)
-eta_range = []
-nu_range = []
+lmbda_range =  [8, 9, 10, 11, 12, 13, 14, 15]                 # Begen et al., (2024)
+mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15, 1/16, 1/17]         # Moitra et al., (2017)
+mu_2_range =  [1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15] # Essafi et al., 2022
+rho_1_range =  [0.1, 0.08, 0.06, 0.04, 0.02, 0.01]            # Lo, (2001)
+#rho_2_range = [] # NEEDS REFERENCE (hard to find, absrbing rho2 into rho1)
+ratio_range =  [1/8, 1/9, 1/10, 1/11]                         # Bhatla & Ryskina (2020)
+eta_range = [0.005, 0.006, 0.007, 0.008, 0.009, 0.01, 0.011]  #Lai et al., 2021
+nu_range = [1/7, 1/8, 1/9, 1/10]                              #ACEP n.d. (accessed 2025)
 
-# Resulting mortality averages
+# Resulting abandonment averages (non-covid-19)
 lmbda_deaths_avg = []
 mu_1_deaths_avg = []
 mu_2_deaths_avg = []
 rho_1_deaths_avg = []
-rho_2_deaths_avg = []
+#rho_2_deaths_avg = []
 ratio_deaths_avg = []
 eta_deaths_avg = []
 nu_deaths_avg = []
 
-# Resulting mortality standard deviations
+# Resulting mortality standard deviations (non-covid-19)
 lmbda_deaths_std = []
 mu_1_deaths_std = []
 mu_2_deaths_std = []
 rho_1_deaths_std = []
-rho_2_deaths_std = []
+#rho_2_deaths_std = []
 ratio_deaths_std = []
 eta_deaths_std = []
 nu_deaths_std = []
 
+# Resulting abandonment averages (Covid-19)
+lmbda_deaths_avg_F = []
+mu_1_deaths_avg_F = []
+mu_2_deaths_avg_F = []
+rho_1_deaths_avg_F = []
+#rho_2_deaths_avg_F = []
+ratio_deaths_avg_F = []
+eta_deaths_avg_F = []
+nu_deaths_avg_F = []
+
+# Resulting mortality standard deviations (Covid-19)
+lmbda_deaths_std_F = []
+mu_1_deaths_std_F = []
+mu_2_deaths_std_F = []
+rho_1_deaths_std_F = []
+#rho_2_deaths_std = []
+ratio_deaths_std_F = []
+eta_deaths_std_F = []
+nu_deaths_std_F = []
+
+# Resulting abandonment averages TOTALS
+lmbda_deaths_avg_T = []
+mu_1_deaths_avg_T = []
+mu_2_deaths_avg_T = []
+rho_1_deaths_avg_T = []
+#rho_2_deaths_avg_T = []
+ratio_deaths_avg_T = []
+eta_deaths_avg_T = []
+nu_deaths_avg_T = []
+
+# Resulting mortality standard deviations TOTALS
+lmbda_deaths_std_T = []
+mu_1_deaths_std_T = []
+mu_2_deaths_std_T = []
+rho_1_deaths_std_T = []
+#rho_2_deaths_std = []
+ratio_deaths_std_T = []
+eta_deaths_std_T = []
+nu_deaths_std_T = []
+
 for each in lmbda_range:
   # Run the model   H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio
-  death_avg, death_stdev = single_model(H, n, each, mu_1, mu_2, rho_1, rho_2, eta, nu, r)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, each, mu_1, mu_2, rho_1, rho_2, eta, nu, r)
 
   # Record average deaths in list
-  lmbda_deaths_avg.append(death_avg)
+  lmbda_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  lmbda_deaths_std.append(death_stdev)
+  lmbda_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  lmbda_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  lmbda_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  lmbda_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  lmbda_deaths_std_T.append(death_stdev_Total)
 
 
 # Sensitivity on mu_1
 for each in mu_1_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, each,  mu_2, rho_1, rho_2, eta, nu, r)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, each,  mu_2, rho_1, rho_2, eta, nu, r)
 
   # Record average deaths in list
-  mu_1_deaths_avg.append(death_avg)
+  mu_1_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  mu_1_deaths_std.append(death_stdev)
+  mu_1_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  mu_1_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  mu_1_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  mu_1_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  mu_1_deaths_std_T.append(death_stdev_Total)
 
 
 # Sensitivity on mu_2
 for each in mu_2_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, mu_1, each, rho_1, rho_2, eta, nu, r)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, each, rho_1, rho_2, eta, nu, r)
 
   # Record average deaths in list
-  mu_2_deaths_avg.append(death_avg)
+  mu_2_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  mu_2_deaths_std.append(death_stdev)
+  mu_2_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  mu_2_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  mu_2_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  mu_2_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  mu_2_deaths_std_T.append(death_stdev_Total)
 
 
 # Sensitivity on rho_1
 for each in rho_1_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, each, rho_2, eta, nu, r)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, each, rho_2, eta, nu, r)
 
   # Record average deaths in list
-  rho_1_deaths_avg.append(death_avg)
+  rho_1_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  rho_1_deaths_std.append(death_stdev)
+  rho_1_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  rho_1_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  rho_1_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  rho_1_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  rho_1_deaths_std_T.append(death_stdev_Total)
 
 
 # Sensitivity on rho_2
-for each in rho_2_range:
+"""for each in rho_2_range:
   # Run the model
   death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, rho_1, each, eta, nu, r)
 
@@ -739,38 +835,69 @@ for each in rho_2_range:
   rho_2_deaths_avg.append(death_avg)
   # Record standard deviation in list
   rho_2_deaths_std.append(death_stdev)
+  """
 
 # Sensitivity on eta
 for each in eta_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, each, nu, r)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, each, nu, r)
 
   # Record average deaths in list
-  eta_deaths_avg.append(death_avg)
+  eta_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  eta_deaths_std.append(death_stdev)
+  eta_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  eta_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  eta_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  eta_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  eta_deaths_std_T.append(death_stdev_Total)
 
 
 # Sensitivity on nu
 for each in nu_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, each, r)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, each, r)
 
   # Record average deaths in list
-  nu_deaths_avg.append(death_avg)
+  nu_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  nu_deaths_std.append(death_stdev)
+  nu_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  nu_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  nu_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  nu_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  nu_deaths_std_T.append(death_stdev_Total)
 
 
 # Sensitivity on coverage ratio
 for each in ratio_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, each)
+  death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, each)
 
   # Record average deaths in list
-  ratio_deaths_avg.append(death_avg)
+  ratio_deaths_avg.append(death_avg1)
   # Record standard deviation in list
-  ratio_deaths_std.append(death_stdev)
+  ratio_deaths_std.append(death_stdev1)
+
+  # Record average deaths in list
+  ratio_deaths_avg_F.append(death_avg2)
+  # Record standard deviation in list
+  ratio_deaths_std_F.append(death_stdev2)
+
+  # Record average deaths in list
+  ratio_deaths_avg_T.append(death_avg_Total)
+  # Record standard deviation in list
+  ratio_deaths_std_T.append(death_stdev_Total)
 
 # appending all lists into one
 # means
@@ -779,7 +906,7 @@ aggregate_list.append(lmbda_deaths_avg)
 aggregate_list.append(mu_1_deaths_avg)
 aggregate_list.append(mu_2_deaths_avg)
 aggregate_list.append(rho_1_deaths_avg)
-aggregate_list.append(rho_2_deaths_avg)
+#aggregate_list.append(rho_2_deaths_avg)
 aggregate_list.append(eta_deaths_avg)
 aggregate_list.append(nu_deaths_avg)
 aggregate_list.append(ratio_deaths_avg)
@@ -790,13 +917,62 @@ aggregate_list_std.append(lmbda_deaths_std)
 aggregate_list_std.append(mu_1_deaths_std)
 aggregate_list_std.append(mu_2_deaths_std)
 aggregate_list_std.append(rho_1_deaths_std)
-aggregate_list_std.append(rho_2_deaths_std)
+#aggregate_list_std.append(rho_2_deaths_std)
 aggregate_list_std.append(eta_deaths_std)
 aggregate_list_std.append(nu_deaths_std)
 aggregate_list_std.append(ratio_deaths_std)
 
-print("Mortality averages",aggregate_list)
-print("Mortality standard deviations",aggregate_list_std)
+# ----------------------------------------------------------
+# means
+aggregate_list_F = []
+aggregate_list_F.append(lmbda_deaths_avg_F)
+aggregate_list_F.append(mu_1_deaths_avg_F)
+aggregate_list_F.append(mu_2_deaths_avg_F)
+aggregate_list_F.append(rho_1_deaths_avg_F)
+#aggregate_list.append(rho_2_deaths_avg)
+aggregate_list_F.append(eta_deaths_avg_F)
+aggregate_list_F.append(nu_deaths_avg_F)
+aggregate_list_F.append(ratio_deaths_avg_F)
+
+# standard devs
+aggregate_list_std_F = []
+aggregate_list_std_F.append(lmbda_deaths_std_F)
+aggregate_list_std_F.append(mu_1_deaths_std_F)
+aggregate_list_std_F.append(mu_2_deaths_std_F)
+aggregate_list_std_F.append(rho_1_deaths_std_F)
+#aggregate_list_std.append(rho_2_deaths_std)
+aggregate_list_std_F.append(eta_deaths_std_F)
+aggregate_list_std_F.append(nu_deaths_std_F)
+aggregate_list_std_F.append(ratio_deaths_std_F)
+
+print("Mortality averages",aggregate_list_F)
+print("Mortality standard deviations",aggregate_list_std_F)
+
+# ----------------------------------------------------------
+# means
+aggregate_list_T = []
+aggregate_list_T.append(lmbda_deaths_avg_T)
+aggregate_list_T.append(mu_1_deaths_avg_T)
+aggregate_list_T.append(mu_2_deaths_avg_T)
+aggregate_list_T.append(rho_1_deaths_avg_T)
+#aggregate_list.append(rho_2_deaths_avg)
+aggregate_list_T.append(eta_deaths_avg_T)
+aggregate_list_T.append(nu_deaths_avg_T)
+aggregate_list_T.append(ratio_deaths_avg_T)
+
+# standard devs
+aggregate_list_std_T = []
+aggregate_list_std_T.append(lmbda_deaths_std_T)
+aggregate_list_std_T.append(mu_1_deaths_std_T)
+aggregate_list_std_T.append(mu_2_deaths_std_T)
+aggregate_list_std_T.append(rho_1_deaths_std_T)
+#aggregate_list_std.append(rho_2_deaths_std)
+aggregate_list_std_T.append(eta_deaths_std_T)
+aggregate_list_std_T.append(nu_deaths_std_T)
+aggregate_list_std_T.append(ratio_deaths_std_T)
+
+print("Mortality averages",aggregate_list_T)
+print("Mortality standard deviations",aggregate_list_std_T)
 #-----------------------------------------------------------------------------------------------
 # Testing area
 # multi_model(U, a, b, mu_1, mu_2, eta, nu) 
