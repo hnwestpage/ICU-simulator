@@ -665,14 +665,15 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
 
   #print("--- %s seconds ---" % (time.time() - start_time))
 
+
 #-----------------------------------------------------------------------------------------------
 # SENSITIVITY ANALYSIS**********************************************************************************************
 # Parameter settings and ranges
 
-# Rural/Urban setting
+# Rural/Urban setting [(H,n)/(15,35)]
 H = 15
 n = 35
-
+"""
 # Parameter ranges
 lmbda_range =  [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]                 # Begen et al., (2024)
 mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15, 1/16, 1/17]         # Moitra et al., (2017)
@@ -826,16 +827,16 @@ for each in rho_1_range:
   rho_1_deaths_std_T.append(death_stdev_Total)
 
 
-# Sensitivity on rho_2
-"""for each in rho_2_range:
+# Sensitivity on rho_2 COMMENTED OUT
+#for each in rho_2_range:
   # Run the model
-  death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, rho_1, each, eta, nu, r)
+  #death_avg, death_stdev = single_model(H, n, lmbda, mu_1, mu_2, rho_1, each, eta, nu, r)
 
   # Record average deaths in list
-  rho_2_deaths_avg.append(death_avg)
+  #rho_2_deaths_avg.append(death_avg)
   # Record standard deviation in list
-  rho_2_deaths_std.append(death_stdev)
-  """
+  #rho_2_deaths_std.append(death_stdev)
+
 
 # Sensitivity on eta
 for each in eta_range:
@@ -972,7 +973,9 @@ aggregate_list_std_T.append(nu_deaths_std_T)
 aggregate_list_std_T.append(ratio_deaths_std_T)
 
 print("Mortality averages",aggregate_list_T)
-print("Mortality standard deviations",aggregate_list_std_T)
+print("Mortality standard deviations",aggregate_list_std_T)"""
 #-----------------------------------------------------------------------------------------------
 # Testing area
 # multi_model(U, a, b, mu_1, mu_2, eta, nu) 
+death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, r)
+print(death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
