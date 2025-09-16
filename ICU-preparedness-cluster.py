@@ -39,7 +39,7 @@ d = 0.27                   # Percent of budget spent on nursing personnel
 budget_array = get_budget_options((1-c-d)*U, a, b)
 
 # Rates
-lmbda = 7            # Baseline arrival rate of patients to ICU
+lmbda = 9.5          # Baseline arrival rate of patients to ICU; McManus (2004), Begen (2024)
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 1/20         # Departure rate of baseline patients from the queue (renege)
@@ -63,7 +63,7 @@ tt = 6              # number of time steps per day (~4 hour time steps)
 
 # Miscellaneous
 N = 1*10**5                       # population size (urban setting baseline)
-M = 5                             # Number of sample paths
+M = 25                            # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
@@ -674,7 +674,7 @@ H = 15
 n = 35
 
 # Parameter ranges
-lmbda_range =  [8, 9, 10, 11, 12, 13, 14, 15]                 # Begen et al., (2024)
+lmbda_range =  [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]                 # Begen et al., (2024)
 mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15, 1/16, 1/17]         # Moitra et al., (2017)
 mu_2_range =  [1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15] # Essafi et al., 2022
 rho_1_range =  [0.1, 0.08, 0.06, 0.04, 0.02, 0.01]            # Lo, (2001)
