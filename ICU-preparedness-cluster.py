@@ -675,14 +675,14 @@ H = 5
 n = 10
 
 # Parameter ranges
-lmbda_range = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7]                 # Begen et al., (2024) {URBAN} Murthy et al. (2015) {low income/rural}
-mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15, 1/16, 1/17]         # Moitra et al., (2017)
+lmbda_range = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7]   # Begen et al., (2024) {URBAN} Murthy et al. (2015) {low income/rural}
+mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15, 1/16, 1/17]  # Moitra et al., (2017)
 mu_2_range =  [1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15] # Essafi et al., 2022
 rho_1_range =  [0.1, 0.08, 0.06, 0.04, 0.02, 0.01]            # Lo, (2001)
-#rho_2_range = [] # NEEDS REFERENCE (hard to find, absrbing rho2 into rho1)
-ratio_range =  [1/8, 1/9, 1/10, 1/11]                         # Bhatla & Ryskina (2020)
+#rho_2_range = [] # NEEDS REFERENCE (hard to find, absorbing rho2 into rho1)
 eta_range = [0.005, 0.006, 0.007, 0.008, 0.009, 0.01, 0.011]  #Lai et al., 2021
 nu_range = [1/7, 1/8, 1/9, 1/10]                              #ACEP n.d. (accessed 2025)
+ratio_range =  [1/8, 1/9, 1/10, 1/11]                         # Bhatla & Ryskina (2020)
 
 # Resulting abandonment averages (non-covid-19)
 lmbda_deaths_avg = []
@@ -690,9 +690,9 @@ mu_1_deaths_avg = []
 mu_2_deaths_avg = []
 rho_1_deaths_avg = []
 #rho_2_deaths_avg = []
-ratio_deaths_avg = []
 eta_deaths_avg = []
 nu_deaths_avg = []
+ratio_deaths_avg = []
 
 # Resulting mortality standard deviations (non-covid-19)
 lmbda_deaths_std = []
@@ -700,9 +700,9 @@ mu_1_deaths_std = []
 mu_2_deaths_std = []
 rho_1_deaths_std = []
 #rho_2_deaths_std = []
-ratio_deaths_std = []
 eta_deaths_std = []
 nu_deaths_std = []
+ratio_deaths_std = []
 
 # Resulting abandonment averages (Covid-19)
 lmbda_deaths_avg_F = []
@@ -710,9 +710,9 @@ mu_1_deaths_avg_F = []
 mu_2_deaths_avg_F = []
 rho_1_deaths_avg_F = []
 #rho_2_deaths_avg_F = []
-ratio_deaths_avg_F = []
 eta_deaths_avg_F = []
 nu_deaths_avg_F = []
+ratio_deaths_avg_F = []
 
 # Resulting mortality standard deviations (Covid-19)
 lmbda_deaths_std_F = []
@@ -720,9 +720,9 @@ mu_1_deaths_std_F = []
 mu_2_deaths_std_F = []
 rho_1_deaths_std_F = []
 #rho_2_deaths_std = []
-ratio_deaths_std_F = []
 eta_deaths_std_F = []
 nu_deaths_std_F = []
+ratio_deaths_std_F = []
 
 # Resulting abandonment averages TOTALS
 lmbda_deaths_avg_T = []
@@ -730,9 +730,9 @@ mu_1_deaths_avg_T = []
 mu_2_deaths_avg_T = []
 rho_1_deaths_avg_T = []
 #rho_2_deaths_avg_T = []
-ratio_deaths_avg_T = []
 eta_deaths_avg_T = []
 nu_deaths_avg_T = []
+ratio_deaths_avg_T = []
 
 # Resulting mortality standard deviations TOTALS
 lmbda_deaths_std_T = []
@@ -740,9 +740,9 @@ mu_1_deaths_std_T = []
 mu_2_deaths_std_T = []
 rho_1_deaths_std_T = []
 #rho_2_deaths_std = []
-ratio_deaths_std_T = []
 eta_deaths_std_T = []
 nu_deaths_std_T = []
+ratio_deaths_std_T = []
 
 for each in lmbda_range:
   # Run the model   H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio
