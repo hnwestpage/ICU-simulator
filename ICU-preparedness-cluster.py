@@ -29,7 +29,7 @@ def get_budget_options(U, a, b):
 # Parameter initializations
 
 # Resources                # Description
-U = 2.6 * 10**6            # Hospital budget in USD (total expense = $26 million)
+U = 2.6 * 10**7            # Hospital budget in USD (total expense = $26 million)
 a = 3.0 * 10**5            # Average HCP yearly salary ($300,000)
 b = 1.25 * 10**5           # Average cost of one ICU bed for a year ($125,000)
 c = 0.35                   # Percent of budget spent on constant costs (Utilities, maintenence)
@@ -39,7 +39,7 @@ d = 0.27                   # Percent of budget spent on nursing personnel
 budget_array = get_budget_options((1-c-d)*U, a, b)
 
 # Rates
-lmbda = 9.5          # Baseline arrival rate of patients to ICU; McManus (2004), Begen (2024)
+lmbda = 3.75          # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 1/20         # Departure rate of baseline patients from the queue (renege)
@@ -358,26 +358,26 @@ def get_mortality_stats(run_q_D, run_q_D_F):
   entries_2 = []                          # empty list for grabbing last entry of run
 
   for i in range(M):                    # for each run
-    entries_1.append(run_q_D[i][-1])      # append the last entry of the run
+    entries_1.append(run_q_D[i][-1])      # append the last entry of the run; counting ALL queue abandoning events
 
   for i in range(M):                    # for each run
-    entries_2.append(run_q_D_F[i][-1])      # append the last entry of the run
+    entries_2.append(run_q_D_F[i][-1])      # append the last entry of the run; only counting COVID patient queue abandoning events
 
   # "entries" denotes non-COVID-19 departures, "entries_F" denotes COVID-19 departures
-  entries = [a - b for a, b in zip(entries_1, entries_2)]
+  entries = [a - b for a, b in zip(entries_1, entries_2)]   # counting only NON-COVID ptient queue abandonments
   entries_F = entries_2
 
   # Get the average of each
-  avg_1 = np.mean(entries)
-  avg_2 = np.mean(entries_F)
-  avg_3 = np.mean(entries_1)
+  avg_1 = np.mean(entries)    # Non-COVID
+  avg_2 = np.mean(entries_F)  # ONLY COVID
+  avg_3 = np.mean(entries_1)  # Total
 
   # Get standard deviation of each
   std_1 = np.std(entries) # non covid
   std_2 = np.std(entries_F) # covid
   std_3 = np.std(entries_1) # total
   
-  """
+  """ # Commented out, as we are not designating the reason or proportion of queue abandonments due to mortality
   U_mort_mean_1 = mort_Q * avg_1
   U_mort_mean_19 = mort_Q_19 * avg_2
 
@@ -670,12 +670,12 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
 # SENSITIVITY ANALYSIS**********************************************************************************************
 # Parameter settings and ranges
 
-# Rural/Urban setting [(H,n)/(15,35)]
-H = 15
-n = 35
-"""
+# Rural/Urban setting [(5,10)/(15,35)]
+H = 5
+n = 10
+
 # Parameter ranges
-lmbda_range =  [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]                 # Begen et al., (2024)
+lmbda_range = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7]                 # Begen et al., (2024) {URBAN} Murthy et al. (2015) {low income/rural}
 mu_1_range =  [1/2, 1/3, 1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15, 1/16, 1/17]         # Moitra et al., (2017)
 mu_2_range =  [1/4, 1/5, 1/6, 1/7, 1/8, 1/9, 1/10, 1/11, 1/12, 1/13, 1/14, 1/15] # Essafi et al., 2022
 rho_1_range =  [0.1, 0.08, 0.06, 0.04, 0.02, 0.01]            # Lo, (2001)
@@ -973,9 +973,9 @@ aggregate_list_std_T.append(nu_deaths_std_T)
 aggregate_list_std_T.append(ratio_deaths_std_T)
 
 print("Mortality averages",aggregate_list_T)
-print("Mortality standard deviations",aggregate_list_std_T)"""
+print("Mortality standard deviations",aggregate_list_std_T)
 #-----------------------------------------------------------------------------------------------
 # Testing area
 # multi_model(U, a, b, mu_1, mu_2, eta, nu) 
 death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, r)
-print(death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
+print("General Rural averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
