@@ -6,7 +6,7 @@ import math
 import matplotlib.pyplot as plt
 import pandas as pd
 
-plt.rcParams.update({'font.size': 14})
+plt.rcParams.update({'font.size': 12})
 #---------------------------------------------------------------------
 # PRELIMINARY FUNCTIONS
 # Budget operations calculator
@@ -701,4 +701,4 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
 
 #-----------------------------------------------------------------------------------------------
 # Testing area
-single_model(14, 30, lmbda, mu_1, mu_2, 1/10, 1/20, eta, nu, r)
+single_model(15, 30, 7.5, 1/3.4, 1/8, 1/10, 1/10, 0.02, 1/7, 1/9.5)

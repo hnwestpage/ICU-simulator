@@ -39,7 +39,7 @@ d = 0.27                   # Percent of budget spent on nursing personnel
 budget_array = get_budget_options((1-c-d)*U, a, b)
 
 # Rates
-lmbda = 3.75          # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
+lmbda = 3.75         # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 1/20         # Departure rate of baseline patients from the queue (renege)
@@ -53,7 +53,7 @@ mort_Q = 0.507             # Proportion of baseline patients who perish in the q
 mort_ICU_19 = 0.245        # Proportion of COVID-19 patients who perish in the ICU- !NEEDS REF
 mort_Q_19 = 0.507          # Proportion of COVID-19 patients who perish in the queue- !NEEDS REF
 crit = 0.00102             # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
-r =  1/9.5                 # Threshold ratio of HCP to beds (servers)
+r =  1/11                 # Threshold ratio of HCP to beds (servers)
 
 # SEIR parameters - Original Wuhan 2020
 beta = 0.0000033    # contact rate between susceptibles and infectives
@@ -62,7 +62,7 @@ alpha = 1/8         # reciprocal of mean recovery period (8 days)
 tt = 6              # number of time steps per day (~4 hour time steps)
 
 # Miscellaneous
-N = 1*10**5                       # population size (urban setting baseline)
+N = 1*10**5                       # population size (urban setting baseline = 10^5, )
 M = 25                            # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
@@ -70,7 +70,7 @@ x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
 
 # Print out current parameters
 print("Resources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
-print("Rates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\n\Reneging: ",rho_1,"\n\HCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
+print("Rates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\nReneging: ",rho_1,"\nHCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
 print("Proportions:-----------------\n\% Critical condition: ",crit,"\nCoverage ratio (HCP:Patients): ",r)
 print("SEIR Parameters:-----------------\nbeta: ",beta,"\ngamma: ",gamma,"\nalpha: ",alpha,"\nPopulation size: ",N)
 print("Total sample paths per scenario: ",M)
@@ -108,7 +108,7 @@ def check_mu(i, j, n_current, mu_1, mu_2):
   return mu_1_t + mu_2_t
 
 
-# Function to check the current queue departure rate
+"""# Function to check the current queue departure rate
 #   i = total patients in queue (X_occ length)
 #   j = infectious patients in queue (X_occ sum)
 def check_rho(X_occ, rho_1, rho_2):
@@ -120,7 +120,19 @@ def check_rho(X_occ, rho_1, rho_2):
     rho_1_t = i*rho_1
     rho_2_t = j*rho_2
 
-  return rho_1_t + rho_2_t
+  return rho_1_t + rho_2_t"""
+
+# Function to check the current queue departure rate
+def check_rho(X_occ, rho_1):
+  i = len(X_occ)
+
+  if i <= 0:
+    return 0
+  else:
+    rho_1_t = i*rho_1
+
+  return rho_1_t
+
 
 # Function to check the current HCP infection rate
 #   i = number of infectious patients
@@ -409,7 +421,7 @@ I = SEIR(S_0, E_0, I_0, R_0, T, N)
 
 #**************************************************************************************************************************************
 # SINGLE SCENARIO MODEL****************************************************************************************************************
-def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
+def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
 
   # Single scenario cell- fixed HCP and n
   H_current = H
@@ -423,7 +435,12 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   run_q_D = []
   run_q_D_F = []
 
+  run_rho_t_tracer = []
+
   for i in range (M):
+    run_t = []
+    rho_t_tracer = []
+
     # print("Run number",str(i+1))
 
     # Seeding initial conditions
@@ -470,9 +487,12 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
       # Check all rates
       lmbda_t = check_lambda(t[-1], lmbda)
       mu_t = check_mu(Z[-1],F[-1],N_T[-1], mu_1, mu_2)
-      rho_t = check_rho(X_occ, rho_1, rho_2)
+      rho_t = check_rho(X_occ, rho_1)
       eta_t = check_eta(F[-1],H[-1], eta)
       nu_t = check_nu(J[-1], nu)
+
+
+      rho_t_tracer.append(rho_t)
 
       # Total rate
       rate = lmbda_t + mu_t + rho_t + eta_t + nu_t
@@ -506,6 +526,8 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
       # Determine number of infectious patients in queue
       C.append(sum(X_occ))
 
+      run_t.append(t)
+
     # Printing resulting array of runs*** Single Scenario Testing Only
     """print('Timestamp list:',t)
     print('Number in queue',X)
@@ -520,6 +542,12 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
     # Sensitivity analysis***
     run_q_D.append(q_D)
     run_q_D_F.append(q_D_F)
+
+    run_rho_t_tracer.append(rho_t_tracer)
+  
+  #averaging run of rho_t
+  avg_rho_t = find_avg_run(run_t,run_rho_t_tracer)
+  print(avg_rho_t)
 
   # Return the mortality stats*** Sensitivity Analysis Runs
   mean1, mean2, mean3, stdev1, stdev2, stdev3 = get_mortality_stats(run_q_D, run_q_D_F)
@@ -666,7 +694,7 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
   #print("--- %s seconds ---" % (time.time() - start_time))
 
 
-#-----------------------------------------------------------------------------------------------
+"""#-----------------------------------------------------------------------------------------------
 # SENSITIVITY ANALYSIS**********************************************************************************************
 # Parameter settings and ranges
 
@@ -973,9 +1001,9 @@ aggregate_list_std_T.append(nu_deaths_std_T)
 aggregate_list_std_T.append(ratio_deaths_std_T)
 
 print("Mortality averages",aggregate_list_T)
-print("Mortality standard deviations",aggregate_list_std_T)
+print("Mortality standard deviations",aggregate_list_std_T)"""
 #-----------------------------------------------------------------------------------------------
 # Testing area
 # multi_model(U, a, b, mu_1, mu_2, eta, nu) 
-death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, r)
-print("General Rural averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
+death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(15, 35, 9.5, mu_1, mu_2, 1/5, eta, nu, r)
+#print("General averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
