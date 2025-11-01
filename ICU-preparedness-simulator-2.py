@@ -531,14 +531,14 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   N_T_avg = find_avg_run(run_t, run_N_T)
 
   # Plotting average run
-  ax[0].plot(t_ints, X_avg, color='red', linewidth = 2)
-  ax[0].plot(t_ints, C_avg, color='lightcoral', linewidth = 2)
-  ax[1].plot(t_ints, Z_avg, color='green', linewidth = 2)
-  ax[1].plot(t_ints, F_avg, color='limegreen', linewidth = 2)
-  ax[1].plot(t_ints, N_T_avg, 'k:', linewidth = 2)
-  ax[2].plot(t_ints, q_D_avg, color='black', linewidth = 2)
-  ax[2].plot(t_ints, q_D_F_avg, color='dimgray', linewidth = 2)
-  ax[3].plot(t_ints, H_avg, color='blue', linewidth = 2)
+  ax[0].plot(t_ints, X_avg, color='red', linewidth = 2, label='total patients')
+  ax[0].plot(t_ints, C_avg, color='lightcoral', linewidth = 2, label='COVID-19 patients')
+  ax[1].plot(t_ints, Z_avg, color='green', linewidth = 2, label='total patients')
+  ax[1].plot(t_ints, F_avg, color='limegreen', linewidth = 2, label='COVID-19 patients')
+  ax[1].plot(t_ints, N_T_avg, 'k:', linewidth = 2, label='ICU capacity')
+  ax[2].plot(t_ints, q_D_avg, color='black', linewidth = 2, label='total patients')
+  ax[2].plot(t_ints, q_D_F_avg, color='dimgray', linewidth = 2, label='COVID-19 patients')
+  ax[3].plot(t_ints, H_avg, color='blue', linewidth = 2, label='active HCP')
 
   """
   #Displaying the ICU capacity
@@ -546,13 +546,18 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, rho_2, eta, nu, ratio):
   ax[1].plot(t_ints, N_lin, 'k:')"""
 
   # Graph Displays
-  fig.suptitle('M/M/'+str(n_current)+' with dynamic arrival rate, HCP susceptible')
-  fig.supxlabel('Time')
+  fig.suptitle('M/M/'+str(n_current)+' with dynamic arrival/service rates, HCP susceptible')
+  fig.supxlabel('Time (Days)')
 
-  ax[0].set_ylabel('Patients in queue')
-  ax[1].set_ylabel('Patients in ICU')
-  ax[2].set_ylabel('Queue Departures')
-  ax[3].set_ylabel('Active Clinicians')
+  ax[0].set_ylabel('Queue Length')
+  ax[1].set_ylabel('ICU utilization')
+  ax[2].set_ylabel('Reneging')
+  ax[3].set_ylabel('Active HCP')
+
+  ax[0].legend(loc='lower right', fontsize='small')
+  ax[1].legend(loc='lower right', fontsize='small')
+  ax[2].legend(loc='lower right', fontsize='small')
+  ax[3].legend(loc='lower right', fontsize='small')
 
   #fig.tight_layout()
   fig.set_size_inches(7,9)
@@ -701,4 +706,4 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
 
 #-----------------------------------------------------------------------------------------------
 # Testing area
-single_model(15, 30, 7.5, 1/3.4, 1/8, 1/10, 1/10, 0.02, 1/7, 1/9.5)
+single_model(14, 30, 6.5, 1/3.4, 1/8, 1/10, 1/10, 0.02, 1/7, 1/8)

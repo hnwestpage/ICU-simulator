@@ -435,11 +435,11 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
   run_q_D = []
   run_q_D_F = []
 
-  run_rho_t_tracer = []
+  #run_rho_t_tracer = []
 
   for i in range (M):
     run_t = []
-    rho_t_tracer = []
+    #rho_t_tracer = []
 
     # print("Run number",str(i+1))
 
@@ -491,8 +491,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
       eta_t = check_eta(F[-1],H[-1], eta)
       nu_t = check_nu(J[-1], nu)
 
-
-      rho_t_tracer.append(rho_t)
+      #rho_t_tracer.append(rho_t)
 
       # Total rate
       rate = lmbda_t + mu_t + rho_t + eta_t + nu_t
@@ -543,11 +542,11 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
     run_q_D.append(q_D)
     run_q_D_F.append(q_D_F)
 
-    run_rho_t_tracer.append(rho_t_tracer)
+    #run_rho_t_tracer.append(rho_t_tracer)
   
-  #averaging run of rho_t
+  """#averaging run of rho_t
   avg_rho_t = find_avg_run(run_t,run_rho_t_tracer)
-  print(avg_rho_t)
+  print(avg_rho_t)"""
 
   # Return the mortality stats*** Sensitivity Analysis Runs
   mean1, mean2, mean3, stdev1, stdev2, stdev3 = get_mortality_stats(run_q_D, run_q_D_F)
@@ -1005,5 +1004,5 @@ print("Mortality standard deviations",aggregate_list_std_T)"""
 #-----------------------------------------------------------------------------------------------
 # Testing area
 # multi_model(U, a, b, mu_1, mu_2, eta, nu) 
-death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(15, 35, 9.5, mu_1, mu_2, 1/5, eta, nu, r)
-#print("General averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
+death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(15, 35, 9.5, 1/(3.4), 1/15, 1/20, 0.008, 1/8.5, 1/9.5)
+print("General averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
