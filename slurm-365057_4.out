@@ -1,0 +1,42 @@
+======================================================
+Start Time  : Thu Jan 15 11:14:07 AM EST 2026
+Submit Dir  : /users/hwest10/ICU-simulator
+Job ID/Name : 365062 / testing_parallel_computing
+Node List   : str-c160
+Num Tasks   : 25 total [1 nodes @ 25 CPUs/node]
+Num GPUs    :  
+======================================================
+
+Resources:-----------------
+Budget:  26000000.0 
+HCP salary:  300000.0 
+Bed cost:  125000.0 
+\% Constant costs:  0.35 
+\% Nursing staff costs:  0.27
+Rates:-----------------
+Lambda:  3.75 
+mu (baseline):  0.29411764705882354 
+mu (COVID):  0.125 
+Reneging:  0.05 
+HCP infection rate per patient:  0.008 
+HCP recovery:  0.11764705882352941
+Proportions:-----------------
+\% Critical condition:  0.00102 
+Coverage ratio (HCP:Patients):  0.09090909090909091
+SEIR Parameters:-----------------
+beta:  3.3e-06 
+gamma:  0.1923076923076923 
+alpha:  0.125 
+Population size:  100000
+Total sample paths per scenario:  1
+General averages
+ 572.0 
+ 0.0 
+ 693.0 
+ 0.0 
+ 1265.0 
+ 0.0
+
+======================================================
+End Time   : Thu Jan 15 11:14:08 AM EST 2026
+======================================================
