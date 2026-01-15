@@ -364,7 +364,7 @@ def find_peak(x, I):
   t_max = x[max_index]
   return t_max
 
-# function to average the number of queue departures/deaths
+# function to average the number of queue departures/deaths with patient types
 def get_mortality_stats(run_q_D, run_q_D_F):
   entries_1 = []                          # empty list for grabbing last entry of run
   entries_2 = []                          # empty list for grabbing last entry of run
@@ -400,6 +400,31 @@ def get_mortality_stats(run_q_D, run_q_D_F):
   U_mort_std = U_mort_std_1 + U_mort_std_19
   """
   return avg_1, avg_2, avg_3, std_1, std_2, std_3
+
+# function to average the number of queue departures/deaths SIMPLIFIED
+def get_mortality_stats_simp(run_q_D):
+  entries_1 = []                          # empty list for grabbing last entry of run
+
+  for i in range(M):                    # for each run
+    entries_1.append(run_q_D[i][-1])      # append the last entry of the run; counting ALL queue abandoning events
+
+  # Get the average of each
+  avg_3 = np.mean(entries_1)  # Total
+
+  # Get standard deviation of each
+  std_3 = np.std(entries_1) # total
+  
+  """ # Commented out, as we are not designating the reason or proportion of queue abandonments due to mortality
+  U_mort_mean_1 = mort_Q * avg_1
+  U_mort_mean_19 = mort_Q_19 * avg_2
+
+  U_mort_std_1 = mort_Q * std_1
+  U_mort_std_19 = mort_Q_19 * std_2
+
+  U_mort_mean = U_mort_mean_1 + U_mort_mean_19
+  U_mort_std = U_mort_std_1 + U_mort_std_19
+  """
+  return avg_3, std_3
 
 # Function to find the (beds/hcp combo) minimizer of queue deaths
 def find_mort_min(U_mort_avg):
@@ -637,7 +662,7 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
           # Check all rates
           lmbda_t = check_lambda(t[-1], lmbda)
           mu_t = check_mu(Z[-1],F[-1],N_T[-1], mu_1, mu_2)
-          rho_t = check_rho(X_occ, rho_1, rho_2)
+          rho_t = check_rho(X_occ, rho_1)
           eta_t = check_eta(F[-1],H[-1], eta)
           nu_t = check_nu(J[-1], nu)
 
@@ -678,7 +703,7 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
         #run_q_D_F.append(q_D_F)
 
       # Calculating average accumulation & stdev of untreated deaths for the given pair
-      mean, stdev = get_mortality_stats(run_q_D)
+      mean, stdev = get_mortality_stats_simp(run_q_D)
       U_mort_avg[n_current,H_current] = mean
       U_mort_std[n_current,H_current] = stdev
 

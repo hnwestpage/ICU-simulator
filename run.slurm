@@ -3,7 +3,7 @@
 #SBATCH --partition=Orion
 #SBATCH --job-name=testing_parallel_computing
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=25
+#SBATCH --ntasks-per-node=10
 #SBATCH --mem-per-cpu=4GB
 #SBATCH --time=1:00:00
 #SBATCH -o slurm-%A_%a.out --array=0-9
