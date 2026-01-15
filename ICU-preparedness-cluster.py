@@ -1003,6 +1003,7 @@ print("Mortality averages",aggregate_list_T)
 print("Mortality standard deviations",aggregate_list_std_T)"""
 #-----------------------------------------------------------------------------------------------
 # Testing area
-# multi_model(U, a, b, mu_1, mu_2, eta, nu) 
-death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(15, 35, 9.5, 1/(3.4), 1/15, 1/20, 0.008, 1/8.5, 1/9.5)
-print("General averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
+multi_model(U, a, b, mu_1, mu_2, eta, nu)
+
+#death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(15, 35, 9.5, 1/(3.4), 1/15, 1/20, 0.008, 1/8.5, 1/9.5)
+#print("General averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
