@@ -6,7 +6,7 @@
 #SBATCH --ntasks-per-node=10
 #SBATCH --mem-per-cpu=4GB
 #SBATCH --time=1:00:00
-#SBATCH -o slurm-%A_%a.out --array=0-9
+##SBATCH -o slurm-%A_%a.out --array=0-9
 
 echo "======================================================"
 echo "Start Time  : $(date)"
