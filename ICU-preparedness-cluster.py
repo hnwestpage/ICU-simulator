@@ -11,6 +11,9 @@ import time
 
 # Function to find linear combinations of HCP and beds given a fixed budget
 def get_budget_options(U, a, b):
+  # Rescale budget based on constant costs
+  U = (1-c-d)*U
+
   # Get max values for budget
   HCP_max = int(U/a)
   n_max = int(U/b)
@@ -29,14 +32,14 @@ def get_budget_options(U, a, b):
 # Parameter initializations
 
 # Resources                # Description
-U = 2.6 * 10**7            # Hospital budget in USD (total expense = $26 million)
-a = 3.0 * 10**5            # Average HCP yearly salary ($300,000)
-b = 1.25 * 10**5           # Average cost of one ICU bed for a year ($125,000)
+U = 5.0 * 10**6            # Hospital budget in USD (total expense = $5 million)
+a = 2.0 * 10**5            # Average HCP yearly salary ($200,000)
+b = 1.00 * 10**5           # Average cost of one ICU bed for a year ($100,000)
 c = 0.35                   # Percent of budget spent on constant costs (Utilities, maintenence)
 d = 0.27                   # Percent of budget spent on nursing personnel
 
 # Get combinations based on allotted budget
-budget_array = get_budget_options((1-c-d)*U, a, b)
+budget_array = get_budget_options(U, a, b)
 
 # Rates
 lmbda = 3.75         # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
@@ -63,17 +66,17 @@ tt = 6              # number of time steps per day (~4 hour time steps)
 
 # Miscellaneous
 N = 1*10**5                       # population size (urban setting baseline = 10^5, )
-M = 1                            # Number of sample paths
+M = 1                             # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
 
 # Print out current parameters
-print("Resources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
+"""print("Resources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
 print("Rates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\nReneging: ",rho_1,"\nHCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
 print("Proportions:-----------------\n\% Critical condition: ",crit,"\nCoverage ratio (HCP:Patients): ",r)
 print("SEIR Parameters:-----------------\nbeta: ",beta,"\ngamma: ",gamma,"\nalpha: ",alpha,"\nPopulation size: ",N)
-print("Total sample paths per scenario: ",M)
+print("Total sample paths per scenario: ",M)"""
 
 # Set and Get Functions ###########################################################################################
 
@@ -599,9 +602,19 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
   # Get combinations based on allotted budget
   budget_array = get_budget_options(U, a, b)
 
+  # Calculate portion of budget for HCP and Beds
+  U = (1-c-d)*U
+
+  # Get HCP and bed maxes
+  max_HCP = int(U/a)
+  max_beds = int(U/b)
+
+  # Printing parameters
+  print('Budget = ',U,', HCP salary = ',a,', Bed cost = ',b,', max HCP = ',max_HCP,', max beds = ',max_beds)
+
   # Initializing logs of untreated deaths per budget option
-  U_mort_avg = np.zeros((int(U/b),int(U/a)))      # dimension (n x H)
-  U_mort_std = np.zeros((int(U/b),int(U/a)))    # dimension (n x H)
+  U_mort_avg = np.zeros((max_beds,max_HCP))      # dimension (n x H)
+  U_mort_std = np.zeros((max_beds,max_HCP))    # dimension (n x H)
 
   # Per budget scenario
   for row in budget_array:
@@ -702,21 +715,36 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
         run_q_D.append(q_D)
         #run_q_D_F.append(q_D_F)
 
+        # Printing completed run
+        #print('Run ',i,' of ',M,' complete for ',n_current,' beds and ',H_current,' HCP.')
+
       # Calculating average accumulation & stdev of untreated deaths for the given pair
       mean, stdev = get_mortality_stats_simp(run_q_D)
       U_mort_avg[n_current,H_current] = mean
       U_mort_std[n_current,H_current] = stdev
 
-  print("Mortality Averages")
+  # Save abandonment counts as an array
+  U_mort_avg_array = np.asarray(U_mort_avg)
+  U_mort_std_array = np.asarray(U_mort_std)
+
+  # Export arrays as csv files
+  np.savetxt("Mean_abandonment_array.csv",U_mort_avg_array,delimiter=",")
+  np.savetxt("Std_dev_abandonment_array.csv", U_mort_std_array, delimiter=",")
+
+  """print("Mortality Averages")
   for row in U_mort_avg:
     print(row)
 
   print("Mortality standard deviations")
   for row in U_mort_std:
-    print(row)
+    print(row)"""
 
   #print("--- %s seconds ---" % (time.time() - start_time))
 
+
+
+# Running Multi-Model
+multi_model(U, a, b, mu_1, mu_2, eta, nu)
 
 """#-----------------------------------------------------------------------------------------------
 # SENSITIVITY ANALYSIS**********************************************************************************************
@@ -1028,7 +1056,7 @@ print("Mortality averages",aggregate_list_T)
 print("Mortality standard deviations",aggregate_list_std_T)"""
 #-----------------------------------------------------------------------------------------------
 # Testing area
-multi_model(U, a, b, mu_1, mu_2, eta, nu)
+
 
 #death_avg1, death_stdev1, death_avg2, death_stdev2, death_avg_Total, death_stdev_Total = single_model(15, 35, 9.5, 1/(3.4), 1/15, 1/20, 0.008, 1/8.5, 1/9.5)
 #print("General averages\n",death_avg1,"\n", death_stdev1,"\n", death_avg2,"\n", death_stdev2, "\n", death_avg_Total, "\n", death_stdev_Total)
