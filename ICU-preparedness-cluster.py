@@ -20,9 +20,9 @@ def get_budget_options(U, a, b):
 
   budget_array = []
   # Build array of pairs
-  for i in range(n_max - 1):
+  for i in range(n_max):
     inner_vec = []
-    for j in range(HCP_max - 1):
+    for j in range(HCP_max):
       pair = (i+1,j+1)
       inner_vec.append(pair)
     budget_array.append(inner_vec)
@@ -597,7 +597,7 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
 #****************************************************************************************************************************************
 # MULTI SCENARIO MODEL*******************************************************************************************************************
 def multi_model(U, a, b, mu_1, mu_2, eta, nu):
-  #start_time = time.time()
+  start_time = time.time()
 
   # Get combinations based on allotted budget
   budget_array = get_budget_options(U, a, b)
@@ -720,16 +720,16 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
 
       # Calculating average accumulation & stdev of untreated deaths for the given pair
       mean, stdev = get_mortality_stats_simp(run_q_D)
-      U_mort_avg[n_current,H_current] = mean
-      U_mort_std[n_current,H_current] = stdev
+      U_mort_avg[n_current-1,H_current-1] = mean
+      U_mort_std[n_current-1,H_current-1] = stdev
 
   # Save abandonment counts as an array
   U_mort_avg_array = np.asarray(U_mort_avg)
   U_mort_std_array = np.asarray(U_mort_std)
 
   # Export arrays as csv files
-  np.savetxt("Mean_abandonment_array.csv",U_mort_avg_array,delimiter=",")
-  np.savetxt("Std_dev_abandonment_array.csv", U_mort_std_array, delimiter=",")
+  np.savetxt("Mean_abandonment_array_test2.csv",U_mort_avg_array,delimiter=",")
+  np.savetxt("Std_dev_abandonment_array_test2.csv", U_mort_std_array, delimiter=",")
 
   """print("Mortality Averages")
   for row in U_mort_avg:
@@ -739,8 +739,7 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
   for row in U_mort_std:
     print(row)"""
 
-  #print("--- %s seconds ---" % (time.time() - start_time))
-
+  print("--- %s seconds ---" % (time.time() - start_time))
 
 
 # Running Multi-Model
