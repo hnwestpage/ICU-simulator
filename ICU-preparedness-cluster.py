@@ -4,6 +4,7 @@
 import numpy as np
 import math
 import time
+import random
 
 #---------------------------------------------------------------------
 # PRELIMINARY FUNCTIONS
@@ -597,7 +598,12 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
 #****************************************************************************************************************************************
 # MULTI SCENARIO MODEL*******************************************************************************************************************
 def multi_model(U, a, b, mu_1, mu_2, eta, nu):
+  # track run time
   start_time = time.time()
+
+  # generate random number for saving file
+  num = math.floor((10**6)*np.random.rand())
+  num_str = str(num)
 
   # Get combinations based on allotted budget
   budget_array = get_budget_options(U, a, b)
@@ -728,8 +734,8 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
   U_mort_std_array = np.asarray(U_mort_std)
 
   # Export arrays as csv files
-  np.savetxt("Mean_abandonment_array_test2.csv",U_mort_avg_array,delimiter=",")
-  np.savetxt("Std_dev_abandonment_array_test2.csv", U_mort_std_array, delimiter=",")
+  np.savetxt("Mean_abandonment_array_"+num_str+".csv",U_mort_avg_array,delimiter=",")
+  np.savetxt("Std_dev_abandonment_array_"+num_str+".csv", U_mort_std_array, delimiter=",")
 
   """print("Mortality Averages")
   for row in U_mort_avg:
