@@ -1,12 +1,11 @@
 #! /bin/bash
 
 #SBATCH --partition=Orion
-#SBATCH --job-name=testing_RNG_file_output_names
+#SBATCH --job-name=testing_large_num_runs
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=10
+#SBATCH --ntasks-per-node=50
 #SBATCH --mem-per-cpu=4GB
-#SBATCH --time=0:30:00
-#SBATCH -o slurm-%A_%a.out --array=0-4
+#SBATCH --time=2:30:00
 
 echo "======================================================"
 echo "Start Time  : $(date)"
