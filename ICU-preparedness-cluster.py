@@ -32,6 +32,10 @@ def get_budget_options(U, a, b):
 
 # Parameter initializations
 
+# generate random number for saving file
+num = math.floor((10**6)*np.random.rand())
+num_str = str(num)
+
 # Resources                # Description
 U = 5.0 * 10**6            # Hospital budget in USD (total expense = $5 million)
 a = 2.0 * 10**5            # Average HCP yearly salary ($200,000)
@@ -64,20 +68,22 @@ beta = 0.0000033    # contact rate between susceptibles and infectives
 gamma = 1/5.2       # reciprocal of mean exposed period (5.2 days)
 alpha = 1/8         # reciprocal of mean recovery period (8 days)
 tt = 6              # number of time steps per day (~4 hour time steps)
+#N = 1*10**5        # population size (High resource setting = 100,000)
+N = 5*10**4         # population size (low resource setting = 50,000)
 
 # Miscellaneous
-N = 1*10**5                       # population size (urban setting baseline = 10^5, )
-M = 1                            # Number of sample paths
+M = 50                            # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
 
 # Print out current parameters
-"""print("Resources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
-print("Rates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\nReneging: ",rho_1,"\nHCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
-print("Proportions:-----------------\n\% Critical condition: ",crit,"\nCoverage ratio (HCP:Patients): ",r)
-print("SEIR Parameters:-----------------\nbeta: ",beta,"\ngamma: ",gamma,"\nalpha: ",alpha,"\nPopulation size: ",N)
-print("Total sample paths per scenario: ",M)"""
+print('Job ID: ',num)
+print("\nResources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
+print("\nRates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\nReneging: ",rho_1,"\nHCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
+print("\nProportions:-----------------\n\% Critical condition: ",crit,"\nCoverage ratio (HCP:Patients): ",r)
+print("\nSEIR Parameters:-----------------\nbeta: ",beta,"\ngamma: ",gamma,"\nalpha: ",alpha,"\nPopulation size: ",N)
+print("\nTotal sample paths per scenario: ",M)
 
 # Set and Get Functions ###########################################################################################
 
@@ -600,10 +606,6 @@ def single_model(H, n, lmbda, mu_1, mu_2, rho_1, eta, nu, ratio):
 def multi_model(U, a, b, mu_1, mu_2, eta, nu):
   # track run time
   start_time = time.time()
-
-  # generate random number for saving file
-  num = math.floor((10**6)*np.random.rand())
-  num_str = str(num)
 
   # Get combinations based on allotted budget
   budget_array = get_budget_options(U, a, b)
