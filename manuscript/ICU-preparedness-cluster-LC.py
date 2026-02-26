@@ -36,46 +36,47 @@ num = math.floor((10**6)*np.random.rand())
 num_str = str(num)
 
 # Resources                # Description
-U = 5.0 * 10**6            # Hospital budget in USD (total expense = $5 million)
+U = 4.0 * 10**6            # Hospital budget in USD (total expense = $4 million)
 a = 2.0 * 10**5            # Average HCP yearly salary ($200,000)
 b = 1.00 * 10**5           # Average cost of one ICU bed for a year ($100,000)
-c = 0.35                   # Percent of budget spent on constant costs (Utilities, maintenence)
-d = 0.27                   # Percent of budget spent on nursing personnel
+c = 0.32                   # Percent of budget spent on constant costs (Utilities, maintenence)
+d = 0.28                   # Percent of budget spent on nursing personnel
 
 # Get combinations based on allotted budget
-budget_array = get_budget_options(U, a, b)
+#budget_array = get_budget_options(U, a, b)
 
 # Rates
-lmbda = 3.75         # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
+lmbda = 3.5          # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
-rho_1 = 1/20         # Departure rate of baseline patients from the queue (renege)
+rho_1 = 0.12         # Departure rate of baseline patients from the queue (renege)
 rho_2 = rho_1        # Departure rate of COVID-19 patients from the queue (renege)
 eta = 0.008          # Rate at which HCP becomes infected in the workplace
-nu = 1/8.5           # Rate at which infected HCP recover/return to work
+nu = 1/5             # Rate at which infected HCP recover/return to work
 
 # Proportions
 mort_ICU = 0.245           # Proportion of baseline patients who perish in the ICU- Kim et al. (2021), Vincent et al. (2020)
 mort_Q = 0.507             # Proportion of baseline patients who perish in the queue- Boumendil et al. (2012)
 mort_ICU_19 = 0.245        # Proportion of COVID-19 patients who perish in the ICU- !NEEDS REF
 mort_Q_19 = 0.507          # Proportion of COVID-19 patients who perish in the queue- !NEEDS REF
-crit = 0.00102             # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
-r =  1/11                 # Threshold ratio of HCP to beds (servers)
+crit = 0.0112              # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
+r =  1/(9.3)               # Threshold ratio of HCP to beds (servers)
 
-# SEIR parameters - pathogen like SARS-CoV-2 B.1.1.529 (Omicron)
-beta_0 = 0.0000033    # contact rate between susceptibles and infectives
-gamma = 1/5.2       # reciprocal of mean exposed period (5.2 days)
-alpha = 1/8         # reciprocal of mean recovery period (8 days)
+# SEIR parameters - pathogen like SARS-CoV-2 B.1.1.529 (Omicron) + 20% transmissibility
+beta_0 = 0.656      # contact rate between susceptibles and infectives
+gamma = 1/3         # reciprocal of mean exposed period (3 days)
+alpha = 1/5         # reciprocal of mean recovery period (5 days)
 tt = 6              # number of time steps per day (~4 hour time steps)
-N = 72000        # population size (High resource setting = 100,000)
+N = 28818           # population size (Low resource setting = 28818)
 
 # Miscellaneous
-M = 25                            # Number of sample paths
+M = 200                            # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
 
 # Print out current parameters--------------------------------------------------------------------------------------------------------------------------------
+print('Scenario LC')
 print('Job ID: ',num)
 print("\nResources:-----------------\nBudget: ",U,"\nHCP salary: ",a,"\nBed cost: ",b,"\n\% Constant costs: ",c,"\n\% Nursing staff costs: ",d)
 print("\nRates:-----------------\nLambda: ",lmbda,"\nmu (baseline): ",mu_1,"\nmu (COVID): ",mu_2,"\nReneging: ",rho_1,"\nHCP infection rate per patient: ",eta,"\nHCP recovery: ",nu)
@@ -755,10 +756,7 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
 
 
 # Running Multi-Model (Total budget, HCP annual salary, annual ICU bed cost, 1/LOS baseline, 1/LOS epidemic, HPC transmisison, HCP recovery)
-#multi_model(U, a, b, mu_1, mu_2, eta, nu)
-
-# Running single model
-#single_model(H=15, n=25, lmbda=9, mu_1=1/(3.4), mu_2=1/8, rho_1=0.12, eta=0.008, nu=1/5, ratio = 1/(9.3))
+multi_model(U, a, b, mu_1, mu_2, eta, nu)
 
 """#-----------------------------------------------------------------------------------------------
 # SENSITIVITY ANALYSIS**********************************************************************************************

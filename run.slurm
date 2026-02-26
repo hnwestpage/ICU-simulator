@@ -3,7 +3,7 @@
 #SBATCH --partition=Orion
 #SBATCH --job-name=testing_large_num_runs
 #SBATCH --nodes=1
-#SBATCH --ntasks-per-node=50
+#SBATCH --ntasks-per-node=1
 #SBATCH --mem-per-cpu=4GB
 #SBATCH --time=2:30:00
 
