@@ -46,7 +46,7 @@ d = 0.28                   # Percent of budget spent on nursing/tech personnel
 #budget_array = get_budget_options(U, a, b)
 
 # Rates
-lmbda = 9            # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
+lmbda = 7.2          # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 0.12         # Departure rate of baseline patients from the queue (renege)
@@ -59,7 +59,7 @@ mort_ICU = 0.245           # Proportion of baseline patients who perish in the I
 mort_Q = 0.507             # Proportion of baseline patients who perish in the queue- Boumendil et al. (2012)
 mort_ICU_19 = 0.245        # Proportion of COVID-19 patients who perish in the ICU- !NEEDS REF
 mort_Q_19 = 0.507          # Proportion of COVID-19 patients who perish in the queue- !NEEDS REF
-crit = 0.0112              # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
+crit = 0.00112              # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
 r =  1/(9.3)               # Threshold ratio of HCP to beds (servers)
 
 # SEIR parameters - pathogen like SARS-CoV-2 B.1.1.529 (Omicron) + 20% transmissibility
@@ -67,10 +67,10 @@ beta_0 = 0.656      # contact rate between susceptibles and infectives
 gamma = 1/3         # reciprocal of mean exposed period (3 days)
 alpha = 1/5         # reciprocal of mean recovery period (5 days)
 tt = 6              # number of time steps per day (~4 hour time steps)
-N = 72046           # population size (High resource setting = 100,000)
+N = 91176           # population size (High resource setting = 100,000)
 
 # Miscellaneous
-M = 200                            # Number of sample paths
+M = 200                           # Number of sample paths
 T = 365                           # Time (days)
 t_ints = list(range(0,T,1))       # Averaging function time intervals
 x = np.linspace(0, T, T*tt + 1)   # SEIR timescale variable
@@ -209,7 +209,7 @@ def check_nu(i, nu):
 
 # Function to check current unit capacity based on active HCP
 def check_capacity(n, H, N_T, r):
-  N_new = np.floor(H[-1]*(1/r))
+  N_new = np.floor((3/14)*np.floor(H[-1]*(1/r)))
   N_update = np.min((N_new, n))
   N_T.append(N_update)
 
@@ -741,8 +741,8 @@ def multi_model(U, a, b, mu_1, mu_2, eta, nu):
   U_mort_std_array = np.asarray(U_mort_std)
 
   # Export arrays as csv files
-  np.savetxt("Mean_abandonment_array_"+num_str+".csv",U_mort_avg_array,delimiter=",")
-  np.savetxt("Std_dev_abandonment_array_"+num_str+".csv", U_mort_std_array, delimiter=",")
+  np.savetxt("Mean_abandonment_array_HC_"+num_str+".csv",U_mort_avg_array,delimiter=",")
+  np.savetxt("Std_dev_abandonment_array_HC_"+num_str+".csv", U_mort_std_array, delimiter=",")
 
   """print("Mortality Averages")
   for row in U_mort_avg:

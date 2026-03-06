@@ -46,7 +46,7 @@ d = 0.28                   # Percent of budget spent on nursing personnel
 #budget_array = get_budget_options(U, a, b)
 
 # Rates
-lmbda = 3.5          # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
+lmbda = 2.75         # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 0.12         # Departure rate of baseline patients from the queue (renege)
@@ -59,13 +59,13 @@ mort_ICU = 0.245           # Proportion of baseline patients who perish in the I
 mort_Q = 0.507             # Proportion of baseline patients who perish in the queue- Boumendil et al. (2012)
 mort_ICU_19 = 0.245        # Proportion of COVID-19 patients who perish in the ICU- !NEEDS REF
 mort_Q_19 = 0.507          # Proportion of COVID-19 patients who perish in the queue- !NEEDS REF
-crit = 0.0112              # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
+crit = 0.00112              # Proportion of infected indiviuals requiring ICU- Moon et al., (2022)
 r =  1/(9.3)               # Threshold ratio of HCP to beds (servers)
 
 # SEIR parameters - pathogen like SARS-CoV-2 B.1.1.529 (Omicron)
 beta_0 = 0          # contact rate between susceptibles and infectives (NO EPIDEMIC)
-gamma = 1/5.2       # reciprocal of mean exposed period (5.2 days)
-alpha = 1/8         # reciprocal of mean recovery period (8 days)
+gamma = 1/3       # reciprocal of mean exposed period (5.2 days)
+alpha = 1/5         # reciprocal of mean recovery period (8 days)
 tt = 6              # number of time steps per day (~4 hour time steps)
 N = 28818           # population size (Low resource setting = 28818)
 
@@ -209,7 +209,7 @@ def check_nu(i, nu):
 
 # Function to check current unit capacity based on active HCP
 def check_capacity(n, H, N_T, r):
-  N_new = np.floor(H[-1]*(1/r))
+  N_new = np.floor((3/14)*np.floor(H[-1]*(1/r)))
   N_update = np.min((N_new, n))
   N_T.append(N_update)
 
