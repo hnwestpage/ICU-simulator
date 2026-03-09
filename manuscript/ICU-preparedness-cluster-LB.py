@@ -36,7 +36,7 @@ num = math.floor((10**6)*np.random.rand())
 num_str = str(num)
 
 # Resources                # Description
-U = 4.0 * 10**6            # Hospital budget in USD (total expense = $4 million)
+U = 5.0 * 10**6            # Hospital budget in USD (total expense = $5 million)
 a = 2.0 * 10**5            # Average HCP yearly salary ($200,000)
 b = 1.00 * 10**5           # Average cost of one ICU bed for a year ($100,000)
 c = 0.32                   # Percent of budget spent on constant costs (Utilities, maintenence)
@@ -46,7 +46,7 @@ d = 0.28                   # Percent of budget spent on nursing personnel
 budget_array = get_budget_options(U, a, b)
 
 # Rates
-lmbda = 2.75         # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
+lmbda = 2.00         # Baseline arrival rate of patients to ICU; 9.5 ~ {McManus (2004), Begen (2024)} or 
 mu_1 = 1/3.4         # Departure rate of baseline (non infectious) patients from ICU (1/recovery); Moira et al., 2017
 mu_2 = 1/8.0         # Departure rate of COVID-19 (infectious) patients from ICU (1/recovery)
 rho_1 = 0.12         # Departure rate of baseline patients from the queue (renege)

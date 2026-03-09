@@ -5,9 +5,9 @@ import matplotlib.colors as mcolors
 import seaborn as sns
 
 # Read averaged csv file
-dfLA = pd.read_csv(r"C:/Users/hwest10/ICU-simulator/manuscript/Mean_abandonment_array_LA_401471.csv")
-dfLB = pd.read_csv(r"C:/Users/hwest10/ICU-simulator/manuscript/Mean_abandonment_array_208231.csv")
-dfLC = pd.read_csv(r"C:/Users/hwest10/ICU-simulator/manuscript/Mean_abandonment_array_446301.csv")
+dfLA = pd.read_csv(r"C:/Users/hwest10/ICU-simulator/manuscript/Mean_abandonment_array_LA_853333.csv")
+dfLB = pd.read_csv(r"C:/Users/hwest10/ICU-simulator/manuscript/Mean_abandonment_array_LB_342595.csv")
+dfLC = pd.read_csv(r"C:/Users/hwest10/ICU-simulator/manuscript/Mean_abandonment_array_LC237246.csv")
 
 # Get dimensions of array
 n_hcp_L = len(dfLA.columns)
@@ -24,7 +24,7 @@ vmax = max(dfLA.max(axis=None),dfLB.max(axis=None),dfLC.max(axis=None))
 # Plot codes----------------------------------------------------------------
 # open subplot figure with 3x1 size High resource or Low resource
 fig, ax = plt.subplots(nrows=1,ncols=3, sharex=False, layout='constrained')
-fig.suptitle('Low resource facility accumulated queue abandonment over 365 days')
+fig.suptitle('Low resource facility: Accumulated queue abandonment over 365 days')
 fig.supxlabel('Clinicians on staff')
 fig.supylabel('ICU Beds')
 
@@ -59,8 +59,8 @@ ax[0].tick_params(axis='both', which='major', labelsize=7)
 ax[1].tick_params(axis='both', which='major', labelsize=7)
 ax[2].tick_params(axis='both', which='major', labelsize=7)
 
-lin_x = [1,2,3,4,5,6,7]
-lin_y = [16 - 2*x for x in lin_x]
+lin_x = [1,2,3,4,5,6,7,8]
+lin_y = [18 - 2*x for x in lin_x]
 
 sns.lineplot(x=lin_x,y=lin_y,ax=ax[0],color='black',drawstyle='steps-pre',label='Budget threshold')
 sns.lineplot(x=lin_x,y=lin_y,ax=ax[1],color='black',drawstyle='steps-pre',label='Budget threshold')
