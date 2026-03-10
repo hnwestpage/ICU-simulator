@@ -1,0 +1,45 @@
+======================================================
+Start Time  : Mon Mar  9 12:10:20 PM EDT 2026
+Submit Dir  : /users/hwest10/ICU-simulator/manuscript
+Job ID/Name : 10232147 / Low_Resource_Scenario_A
+Node List   : str-c26
+Num Tasks   : 1 total [1 nodes @ 1 CPUs/node]
+Num GPUs    :  
+======================================================
+
+Scenario LA
+
+Job ID:  459518
+
+Resources:-----------------
+Budget:  5000000.0 
+HCP salary:  200000.0 
+Bed cost:  100000.0 
+\% Constant costs:  0.32 
+\% Nursing staff costs:  0.28
+
+Rates:-----------------
+Lambda:  2.0 
+mu (baseline):  0.29411764705882354 
+mu (COVID):  0.125 
+Reneging:  0.12 
+HCP infection rate per patient:  0.008 
+HCP recovery:  0.2
+
+Proportions:-----------------
+\% Critical condition:  0.00112 
+Coverage ratio (HCP:Patients):  0.1075268817204301
+
+SEIR Parameters:-----------------
+beta:  0 
+gamma:  0.3333333333333333 
+alpha:  0.2 
+Population size:  28818
+
+Total sample paths per scenario:  200
+Budget =  1999999.9999999995 , HCP salary =  200000.0 , Bed cost =  100000.0 , max HCP =  9 , max beds =  19
+--- 9974.833131074905 seconds ---
+
+======================================================
+End Time   : Mon Mar  9 02:56:35 PM EDT 2026
+======================================================
