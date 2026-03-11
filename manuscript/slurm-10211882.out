@@ -1,0 +1,44 @@
+======================================================
+Start Time  : Fri Mar  6 12:22:37 PM EST 2026
+Submit Dir  : /users/hwest10/ICU-simulator/manuscript
+Job ID/Name : 10211882 / High_Resource_Scenario_C
+Node List   : str-c23
+Num Tasks   : 1 total [1 nodes @ 1 CPUs/node]
+Num GPUs    :  
+======================================================
+
+Scenario HC
+Job ID:  102802
+
+Resources:-----------------
+Budget:  26000000.0 
+HCP salary:  400000.0 
+Bed cost:  150000.0 
+\% Constant costs:  0.32 
+\% Nursing staff costs:  0.28
+
+Rates:-----------------
+Lambda:  7.2 
+mu (baseline):  0.29411764705882354 
+mu (COVID):  0.125 
+Reneging:  0.12 
+HCP infection rate per patient:  0.008 
+HCP recovery:  0.2
+
+Proportions:-----------------
+\% Critical condition:  0.00112 
+Coverage ratio (HCP:Patients):  0.1075268817204301
+
+SEIR Parameters:-----------------
+beta:  0.656 
+gamma:  0.3333333333333333 
+alpha:  0.2 
+Population size:  91176
+
+Total sample paths per scenario:  200
+Budget =  10399999.999999998 , HCP salary =  400000.0 , Bed cost =  150000.0 , max HCP =  25 , max beds =  69
+--- 395331.38649606705 seconds ---
+
+======================================================
+End Time   : Wed Mar 11 03:11:28 AM EDT 2026
+======================================================
